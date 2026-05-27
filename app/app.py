@@ -1,3 +1,5 @@
+# Agrega la ruta raíz del proyecto al PATH para poder importar
+# archivos aunque app.py esté dentro de otra carpeta.
 import sys
 import os
 
@@ -11,11 +13,14 @@ import joblib
 import matplotlib.pyplot as plt
 import matplotlib
 
+# Evita errores de renderizado de gráficos en Streamlit.
 matplotlib.use("Agg")
 
 import seaborn as sns
 
 from pathlib import Path
+
+# Métricas usadas para evaluar el modelo.
 
 from sklearn.metrics import (
     accuracy_score,
@@ -32,13 +37,16 @@ BASE = Path(__file__).parent.parent
 MODELS = BASE / "models"
 DATA = BASE / "data" / "raw" / "calidad_de_vino.csv"
 
-# ─────────────────────────────────────────────────────────────
-# CONFIG
-# ─────────────────────────────────────────────────────────────
+# CONFIGURACIÓN GENERAL DE STREAMLIT
+
 st.set_page_config(
     page_title="Calidad de Vino · XGBoost",
     layout="wide"
 )
+
+
+# Todo este bloque es CSS personalizado para cambiar
+# completamente la apariencia por defecto de Streamlit.
 
 st.markdown("""
 <style>
@@ -212,9 +220,13 @@ hr{
 
 """, unsafe_allow_html=True)
 
-# ─────────────────────────────────────────────────────────────
-# CARGA DE RECURSOS
-# ─────────────────────────────────────────────────────────────
+
+# CARGA DE MODELO Y DATASET
+
+
+# Cachea el modelo y archivos para no cargarlos
+# cada vez que Streamlit se actualiza.
+
 @st.cache_resource
 def load_artifacts():
 
@@ -227,26 +239,34 @@ def load_artifacts():
 
     return model, scaler, features
 
+# Cachea el dataset ya procesado.
 
 @st.cache_data
 def load_dataset():
-
+    
+    # Carga CSV original.
     df = pd.read_csv(DATA)
 
+    # Convierte calidad en clasificación binaria.
+    # >= 6 = vino bueno.
     df["vino_bueno"] = (df["calidad"] >= 6).astype(int)
 
+     # Elimina columnas que no sirven para entrenamiento.
     df = df.drop(["botella_id", "calidad"], axis=1)
 
+    # Convierte color en variable numérica.
     df = pd.get_dummies(df, columns=["color"], drop_first=True)
 
     return df
 
-
+# Carga todos los recursos necesarios
 model, scaler, FEATURES = load_artifacts()
 
-# ─────────────────────────────────────────────────────────────
+
 # SIDEBAR
-# ─────────────────────────────────────────────────────────────
+
+
+# Menú lateral principal de navegación
 with st.sidebar:
 
     st.markdown("## Calidad de Vino")
@@ -255,6 +275,7 @@ with st.sidebar:
 
     st.markdown("---")
 
+    # Selector de páginas de la aplicación.
     page = st.radio(
         "Navegación",
         [
@@ -266,7 +287,8 @@ with st.sidebar:
     )
 
     st.markdown("---")
-
+    
+    # Información rápida del modelo.
     st.markdown("""
     **Modelo:** XGBoost  
     **Accuracy:** ~84.7 %  
@@ -276,9 +298,10 @@ with st.sidebar:
     `1` = Vino Bueno
     """)
 
-# ═════════════════════════════════════════════════════════════
-# PREDICCIÓN
-# ═════════════════════════════════════════════════════════════
+
+# PÁGINA DE PREDICCIÓN
+
+# Verifica si el usuario está en la página de predicción
 if page == " Predicción":
 
     st.title(" Predicción de Calidad de Vino")
@@ -287,11 +310,14 @@ if page == " Predicción":
         "Ajusta las características del vino y obtén una predicción instantánea."
     )
 
+    # Divide pantalla en dos columnas
+    # Izquierda: inputs
+    # Derecha: resultados
     col_left, col_right = st.columns([2, 1], gap="large")
 
-    # ─────────────────────────────────────────
-    # INPUTS
-    # ─────────────────────────────────────────
+
+    # INPUTS DEL USUARIO
+    
     with col_left:
 
         st.markdown(
@@ -299,6 +325,7 @@ if page == " Predicción":
             unsafe_allow_html=True
         )
 
+        # Presets rápidos para llenar automáticamente inputs.
         preset = st.selectbox(
             " Configuración rápida",
             [
@@ -309,6 +336,7 @@ if page == " Predicción":
             ]
         )
 
+        # Valores de ejemplo para un vino bueno.
         if preset == " Vino Excelente":
 
             valores = {
@@ -326,6 +354,7 @@ if page == " Predicción":
                 "color": "white"
             }
 
+        # Valores de ejemplo para un vino malo
         elif preset == " Vino Malo":
 
             valores = {
@@ -343,6 +372,7 @@ if page == " Predicción":
                 "color": "red"
             }
 
+        # Valores promedio del dataset
         else:
 
             valores = {
@@ -359,9 +389,11 @@ if page == " Predicción":
                 "alcohol": 10.4,
                 "color": "red"
             }
-
+        # Divide inputs en tres columnas para organizar mejor
         c1, c2, c3 = st.columns(3)
 
+        # Acá empiezan todos los inputs del usuario
+        # Cada input representa una característica química del vino
         with c1:
 
             acidez_fija = st.number_input(
@@ -493,9 +525,9 @@ if page == " Predicción":
     prob_bueno = probas[1]
     prob_malo = probas[0]
 
-    # ─────────────────────────────────────────
+    
     # RESULTADOS
-    # ─────────────────────────────────────────
+    
     with col_right:
 
         st.markdown(
