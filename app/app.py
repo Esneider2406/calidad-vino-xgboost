@@ -36,8 +36,7 @@ DATA = BASE / "data" / "raw" / "calidad_de_vino.csv"
 # CONFIG
 # ─────────────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="🍷 Calidad de Vino · XGBoost",
-    page_icon="🍷",
+    page_title="Calidad de Vino · XGBoost",
     layout="wide"
 )
 
@@ -250,7 +249,7 @@ model, scaler, FEATURES = load_artifacts()
 # ─────────────────────────────────────────────────────────────
 with st.sidebar:
 
-    st.markdown("## 🍷 Calidad de Vino")
+    st.markdown("## Calidad de Vino")
 
     st.markdown("### XGBoost Classifier")
 
@@ -259,9 +258,9 @@ with st.sidebar:
     page = st.radio(
         "Navegación",
         [
-            "🔮 Predicción",
-            "📊 Métricas del Modelo",
-            "📈 Análisis del Dataset"
+            " Predicción",
+            " Métricas del Modelo",
+            " Análisis del Dataset"
         ],
         label_visibility="collapsed"
     )
@@ -280,9 +279,9 @@ with st.sidebar:
 # ═════════════════════════════════════════════════════════════
 # PREDICCIÓN
 # ═════════════════════════════════════════════════════════════
-if page == "🔮 Predicción":
+if page == " Predicción":
 
-    st.title("🍷 Predicción de Calidad de Vino")
+    st.title(" Predicción de Calidad de Vino")
 
     st.markdown(
         "Ajusta las características del vino y obtén una predicción instantánea."
@@ -296,21 +295,21 @@ if page == "🔮 Predicción":
     with col_left:
 
         st.markdown(
-            '<p class="section-title">🧪 Características del Vino</p>',
+            '<p class="section-title"> Características del Vino</p>',
             unsafe_allow_html=True
         )
 
         preset = st.selectbox(
-            "⚡ Configuración rápida",
+            " Configuración rápida",
             [
                 "Personalizado",
-                "🍷 Vino Excelente",
-                "🍷 Vino Promedio",
-                "🍷 Vino Malo"
+                " Vino Excelente",
+                " Vino Promedio",
+                " Vino Malo"
             ]
         )
 
-        if preset == "🍷 Vino Excelente":
+        if preset == " Vino Excelente":
 
             valores = {
                 "acidez_fija": 7.0,
@@ -327,7 +326,7 @@ if page == "🔮 Predicción":
                 "color": "white"
             }
 
-        elif preset == "🍷 Vino Malo":
+        elif preset == " Vino Malo":
 
             valores = {
                 "acidez_fija": 15.0,
@@ -500,7 +499,7 @@ if page == "🔮 Predicción":
     with col_right:
 
         st.markdown(
-            '<p class="section-title">📋 Resultado</p>',
+            '<p class="section-title"> Resultado</p>',
             unsafe_allow_html=True
         )
 
@@ -508,7 +507,7 @@ if page == "🔮 Predicción":
 
             st.markdown(f"""
             <div class="result-good">
-                <h1>✅ Vino Bueno</h1>
+                <h1> Vino Bueno</h1>
                 <h2>{prob_bueno*100:.1f}% de confianza</h2>
             </div>
             """, unsafe_allow_html=True)
@@ -517,28 +516,28 @@ if page == "🔮 Predicción":
 
             st.markdown(f"""
             <div class="result-bad">
-                <h1>❌ Vino Malo</h1>
+                <h1> Vino Malo</h1>
                 <h2>{prob_malo*100:.1f}% de confianza</h2>
             </div>
             """, unsafe_allow_html=True)
 
-        st.markdown("### 📊 Probabilidades")
+        st.markdown("###  Probabilidades")
 
         st.progress(float(prob_bueno))
 
         st.metric(
-            "🍷 Probabilidad Bueno",
+            " Probabilidad Bueno",
             f"{prob_bueno*100:.1f}%"
         )
 
         st.metric(
-            "❌ Probabilidad Malo",
+            " Probabilidad Malo",
             f"{prob_malo*100:.1f}%"
         )
 
         st.markdown("---")
 
-        st.markdown("### 🔥 Variables más importantes")
+        st.markdown("###  Variables más importantes")
 
         importances = model.feature_importances_
 
@@ -576,9 +575,9 @@ if page == "🔮 Predicción":
 # ══════════════════════════════════════════════════════════════════════════════
 # PÁGINA 2 — MÉTRICAS DEL MODELO
 # ══════════════════════════════════════════════════════════════════════════════
-elif page == "📊 Métricas del Modelo":
+elif page == " Métricas del Modelo":
 
-    st.title("📊 Métricas del Modelo XGBoost")
+    st.title(" Métricas del Modelo XGBoost")
 
     df_full = load_dataset()
 
@@ -837,9 +836,9 @@ elif page == "📊 Métricas del Modelo":
 # ══════════════════════════════════════════════════════════════════════════════
 # PÁGINA 3 — ANÁLISIS DEL DATASET
 # ══════════════════════════════════════════════════════════════════════════════
-elif page == "📈 Análisis del Dataset":
+elif page == " Análisis del Dataset":
 
-    st.title("📈 Análisis Exploratorio del Dataset")
+    st.title(" Análisis Exploratorio del Dataset")
 
     df_raw = pd.read_csv(DATA)
 
