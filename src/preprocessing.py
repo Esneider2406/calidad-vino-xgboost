@@ -1,13 +1,17 @@
 import pandas as pd
 import numpy as np
+
+# Herramientas de Scikit-Learn para escalado y división del dataset
+
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 
 
 def load_data(path: str) -> pd.DataFrame:
+    # Lee el archivo y lo retorna como DataFrame
     return pd.read_csv(path)
 
-
+# Función encargada de todo el preprocesamiento
 def preprocess(df: pd.DataFrame):
     """
     Aplica el preprocesamiento completo del notebook:
@@ -18,6 +22,7 @@ def preprocess(df: pd.DataFrame):
     - Escalado StandardScaler
     Retorna X_train_scaled, X_test_scaled, y_train, y_test, scaler, feature_names
     """
+     # Se hace copia para no modificar el DataFrame original
     df = df.copy()
     df["vino_bueno"] = (df["calidad"] >= 6).astype(int)
     df = df.drop(["botella_id", "calidad"], axis=1)
@@ -36,7 +41,7 @@ def preprocess(df: pd.DataFrame):
 
     return X_train_scaled, X_test_scaled, y_train, y_test, scaler, list(X.columns)
 
-
+# Prepara un solo registro para hacer predicción desde la app
 def prepare_single(input_dict: dict, scaler: StandardScaler, feature_names: list) -> np.ndarray:
     """
     Prepara un único registro para predicción.
