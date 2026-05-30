@@ -1,4 +1,3 @@
-
 # Agrega la ruta raíz del proyecto al PATH para poder importar
 # archivos aunque app.py esté dentro de otra carpeta.
 import sys
@@ -44,9 +43,7 @@ st.set_page_config(
 st.markdown("""
 <style>
 /* Oculta header superior blanco */
-header {
-    visibility: hidden;
-}
+
 
 /* Elimina espacio superior */
 .block-container {
@@ -71,8 +68,8 @@ footer {
     background: #0d1726;
 }
 
-/* ===== Títulos ===== */
-h1, h2, h3, h4, h5, h6, p, label, span {
+/* ===== Títulos (Aislados para no romper los componentes de Streamlit) ===== */
+h1, h2, h3, h4, h5, h6, .section-title {
     color: white !important;
 }
 
@@ -95,7 +92,7 @@ h1, h2, h3, h4, h5, h6, p, label, span {
     transform: translateY(-4px);
     border-color: #3b82f6;
     box-shadow: 0 8px 25px rgba(59, 130, 246, 0.2);
-    z-index: 999; /* Eleva la tarjeta completa al hacer hover para evitar solapamientos */
+    z-index: 10 !important; /* Valor bajo para no tapar el botón de la barra lateral */
 }
 
 .metric-card h2 {
@@ -124,7 +121,7 @@ h1, h2, h3, h4, h5, h6, p, label, span {
     
     /* Posicionamiento flotante absoluto */
     position: absolute;
-    z-index: 999999 !important; /* Forzado por encima de cualquier otro contenedor de la app */
+    z-index: 100 !important; /* Rango seguro: mayor a las gráficas, menor a la barra lateral */
     top: 100%; /* Lo regresamos justo al límite inferior para mantener estabilidad */
     left: 50%;
     transform: translateX(-50%);
@@ -288,16 +285,18 @@ def load_dataset():
 
 model, scaler, FEATURES = load_artifacts()
 
-# SIDEBAR
+# SIDEBAR (Diseño Premium con Título e Isotipo alineados)
 with st.sidebar:
     st.markdown("""
-    <div style="text-align: left; padding-bottom: 10px; margin-top: -20px;">
-        <svg width="65" height="65" viewBox="0 0 100 100" style="fill: #ffffff; opacity: 0.9;">
+    <div style="display: flex; align-items: center; gap: 15px; padding-bottom: 10px; margin-top: -10px;">
+        <svg width="45" height="45" viewBox="0 0 100 100" style="fill: #60a5fa; opacity: 0.95; transform: scaleY(-1);">
             <path d="M68.5,100 C73.1,100 75,98.1 75,93.5 L75,34.8 C75,30.3 72.4,26.4 69.1,23.5 L67.8,22.3 L67.8,7.3 C67.8,5.4 66.5,4.2 64.9,4.2 L59.1,4.2 C57.5,4.2 56.2,5.4 56.2,7.3 L56.2,22.3 L54.9,23.5 C51.6,26.4 49,30.3 49,34.8 L49,93.5 C49,98.1 50.9,100 55.5,100 Z M37.7,45.2 L27.3,45.2 C25.3,45.2 24.1,46.9 24.8,48.7 C26.7,53.8 28.1,61.4 31.2,67.6 C32.1,69.4 32.5,71.2 32.5,73.1 L32.5,89.6 L25.5,92.2 C24.1,92.7 24.7,94.8 26.2,94.8 L38.8,94.8 C40.3,94.8 40.9,92.7 39.5,92.2 L32.5,89.6 L32.5,73.1 C32.5,71.2 32.9,69.4 33.8,67.6 C36.9,61.4 38.3,53.8 40.2,48.7 C40.9,46.9 39.7,45.2 37.7,45.2 Z"/>
         </svg>
+        <h2 style="margin: 0; font-size: 1.5rem; color: #ffffff; font-weight: 700; line-height: 1.2;">
+            XGBoost Classifier
+        </h2>
     </div>
     """, unsafe_allow_html=True)
-    st.markdown("# XGBoost Classifier")
     st.markdown("---")
 
     page = st.radio(
@@ -446,7 +445,7 @@ if page == " Predicción":
             {
                 "nombre": "Cloudy Bay Sauvignon Blanc", 
                 "tipo": "Blanco (Marlborough, Nueva Zelanda)", 
-                "sabor": "Explosión frutal de maracuyá, lima madura, notas de pasto recién cortado y sutiles minerales.", 
+                "sabor": "Explosión frutal de maracuyá, lime madura, notas de pasto recién cortado y sutiles minerales.", 
                 "textura": "Boca untuosa y concentrada, equilibrada por una acidez crujiente y vibrante que limpia el paladar."
             },
             {
@@ -716,14 +715,14 @@ elif page == " Métricas del Modelo":
         st.markdown('<p class="section-title">Matriz de Confusión</p>', unsafe_allow_html=True)
         cm = confusion_matrix(y_test, y_pred)
         fig_cm, ax_cm = plt.subplots(figsize=(5, 4))
-        fig_cm.patch.set_facecolor("#5D5696")
+        fig_cm.patch.set_facecolor("#1a1025")
         ax_cm.set_facecolor("#1a1025")
 
         sns.heatmap(
             cm, annot=True, fmt="d", cmap="Purples",
             xticklabels=["Malo", "Bueno"], yticklabels=["Malo", "Bueno"],
             ax=ax_cm, linewidths=0.5, linecolor="#333",
-            annot_kws={"color": "black", "size": 14}
+            annot_kws={"color": "white", "size": 14}
         )
         ax_cm.set_xlabel("Predicción", color="white")
         ax_cm.set_ylabel("Valor Real", color="white")
@@ -777,7 +776,7 @@ elif page == " Métricas del Modelo":
     plt.close(fig_imp)
 
 # ══════════════════════════════════════════════════════════════════════════════
-# PÁGINA 3 — ANÁLISIS DEL DATASET
+# PÁGINA 3 — ANÁLISIS DEL DATASET (REPARADA)
 # ══════════════════════════════════════════════════════════════════════════════
 elif page == " Análisis del Dataset":
 
@@ -797,6 +796,7 @@ elif page == " Análisis del Dataset":
                 </div>
             </div>
         ''', unsafe_allow_html=True)
+    
     with s2:
         buenos = (df_raw["calidad"] >= 6).sum()
         st.markdown(f'''
